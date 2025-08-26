@@ -47,6 +47,23 @@ export const createNote = (req: Request, res: Response) => {
 };
 
 export const updateNote = (req: Request, res: Response) => {
+  const {id, title, content} = req.params
+  if(!id){
+    return res.status(StatusCodes.BAD_REQUEST).json({
+      error: ReasonPhrases.BAD_REQUEST,
+      message: "No id provided"
+    })
+  }
+
+  if(!title&&!content){
+    return res.status(StatusCodes.BAD_REQUEST).json({
+      error: ReasonPhrases.BAD_REQUEST,
+      message: "No title or content provided"
+    })
+  }
+
+  noteService.updateNote(id,title,content)
+
   res.send('updateNote placeholder');
 };
 

@@ -27,8 +27,12 @@ export const createNote = (title: string, content: string): Note => {
     return newNote;
 };
 
-export const updateNote = (id: string, title: string, content: string) => {
-    return null;
+export const updateNote = (id: string, title: string, content: string): Note | undefined => {
+    const note = getNoteById(id)
+    if(note === undefined) return null
+    if(title !== undefined) note.title = title 
+    if(content !== undefined) note.content = content
+    return note;
 };
 
 export const deleteNote = (id: string) => {
