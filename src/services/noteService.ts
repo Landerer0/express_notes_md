@@ -27,14 +27,24 @@ export const createNote = (title: string, content: string): Note => {
     return newNote;
 };
 
-export const updateNote = (id: string, title: string, content: string): Note | undefined => {
+// Falta implementar que pasa si la nota no existe, y nota de error asociada
+export const updateNote = (id: string, title?: string, content?: string): Note | undefined => {
     const note = getNoteById(id)
-    if(note === undefined) return null
+    if(note === undefined) return undefined
+    
     if(title !== undefined) note.title = title 
     if(content !== undefined) note.content = content
+    note.updatedAt = new Date()
     return note;
 };
 
-export const deleteNote = (id: string) => {
-    return false;
+export const deleteNote = (id: string): boolean => {
+  const index = notes.findIndex(note => note.id === id);
+
+  if (index === -1) {
+    return false; // No existe
+  }
+
+  notes.splice(index, 1);
+  return true; // borrado con éxito
 };

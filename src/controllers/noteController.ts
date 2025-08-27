@@ -21,7 +21,12 @@ export const getNote = (req: Request, res: Response) => {
 
   const note = noteService.getNoteById(id)
   
-  // Se podria implementar aqui un retorno distinto si note es undefined
+  if(note === undefined){
+    return res.status(StatusCodes.NOT_FOUND).json({
+      error: ReasonPhrases.NOT_FOUND,
+      message: "Note with id "+id+" not found"
+    })
+  }
 
   res.status(StatusCodes.ACCEPTED).json({ 
     message: ReasonPhrases.ACCEPTED,
@@ -47,7 +52,9 @@ export const createNote = (req: Request, res: Response) => {
 };
 
 export const updateNote = (req: Request, res: Response) => {
-  const {id, title, content} = req.params
+  const {id} = req.params
+  const {title, content} = req.body
+
   if(!id){
     return res.status(StatusCodes.BAD_REQUEST).json({
       error: ReasonPhrases.BAD_REQUEST,
@@ -62,11 +69,37 @@ export const updateNote = (req: Request, res: Response) => {
     })
   }
 
-  noteService.updateNote(id,title,content)
+  const updatedNote = noteService.updateNote(id,title,content)
+  if(updatedNote === undefined){
+    return res.status(StatusCodes.NOT_FOUND).json({
+      error: ReasonPhrases.NOT_FOUND,
+      message: "Note with id "+id+" not found"
+    })
+  }
+  res.status(StatusCodes.OK).json({
+    message: ReasonPhrases.OK,
+    note: updatedNote
+  })
 
-  res.send('updateNote placeholder');
 };
 
 export const deleteNote = (req: Request, res: Response) => {
-  res.send('deleteNote placeholder');
+  const {id} = req.params
+  if(!id){
+    return res.status(StatusCodes.BAD_REQUEST).json({
+      error: ReasonPhrases.BAD_REQUEST,
+      message: "No id provided"
+    })
+  }
+  const noteDeleted = noteService.deleteNote(id)
+
+  if(noteDeleted === false){
+    return res.status(StatusCodes.NOT_FOUND).json({
+      error: ReasonPhrases.NOT_FOUND,
+      message: "Note with id "+id+" not found"
+    })
+  }
+  if(noteDeleted === true){
+    return res.status(StatusCodes.NO_CONTENT).send()
+  }
 };
