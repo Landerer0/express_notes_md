@@ -1,4 +1,4 @@
-import { marked } from "marked";
+import { marked } from "marked"
 
 const obtainLanguageCode = (language?: string):string => {
   const defaultLangueage = "es"
@@ -9,11 +9,11 @@ const obtainLanguageCode = (language?: string):string => {
 }
 
 export const renderMarkdownToHtml = async (markdown: string): Promise<string> => {
-  return await marked(markdown);
+  return await marked(markdown)
 };
 
 export const checkGrammarWithAPI = async (content: string, language?: string) => {
-  const grammarLanguageCode = obtainLanguageCode(language);
+  const grammarLanguageCode = obtainLanguageCode(language)
 
   // consideration: change fetch for axios
   const response = await fetch("https://api.languagetool.org/v2/check", {
@@ -23,11 +23,11 @@ export const checkGrammarWithAPI = async (content: string, language?: string) =>
       text: content,
       language: grammarLanguageCode
     })
-  });
+  })
 
   if (!response.ok) {
-    throw new Error("Error calling grammar API");
+    throw new Error("Error calling grammar API")
   }
 
-  return response.json();
+  return response.json()
 };

@@ -2,15 +2,15 @@ import { Request, Response } from 'express';
 import { StatusCodes, ReasonPhrases } from 'http-status-codes';
 import * as noteService from '../services/noteService';
 
-export const getNotes = (req: Request, res: Response) => {
-  const notes = noteService.getAllNotes()
+export const getNotes = async (req: Request, res: Response) => {
+  const notes = await noteService.getAllNotes()
   res.status(StatusCodes.ACCEPTED).json({
     message: ReasonPhrases.ACCEPTED,
     result: notes
   })
 };
 
-export const getNote = (req: Request, res: Response) => {
+export const getNote = async (req: Request, res: Response) => {
   const {id} = req.params
   if(!id){
     return res.status(StatusCodes.BAD_REQUEST).json({
@@ -19,9 +19,9 @@ export const getNote = (req: Request, res: Response) => {
     });
   }
 
-  const note = noteService.getNoteById(id)
+  const note = await noteService.getNoteById(id)
   
-  if(note === undefined){
+  if(note === null){
     return res.status(StatusCodes.NOT_FOUND).json({
       error: ReasonPhrases.NOT_FOUND,
       message: "Note with id "+id+" not found"
@@ -34,7 +34,7 @@ export const getNote = (req: Request, res: Response) => {
   })
 };
 
-export const createNote = (req: Request, res: Response) => {
+export const createNote = async (req: Request, res: Response) => {
   const { title, content } = req.body
 
   if (!title) {
@@ -44,14 +44,14 @@ export const createNote = (req: Request, res: Response) => {
     })
   }
 
-  const newNote = noteService.createNote(title, content);
+  const newNote = await noteService.createNote(title, content);
   res.status(StatusCodes.CREATED).json({
     message: ReasonPhrases.CREATED,
     result: newNote
   })
 };
 
-export const updateNote = (req: Request, res: Response) => {
+export const updateNote = async (req: Request, res: Response) => {
   const {id} = req.params
   const {title, content} = req.body
 
@@ -69,8 +69,8 @@ export const updateNote = (req: Request, res: Response) => {
     })
   }
 
-  const updatedNote = noteService.updateNote(id,title,content)
-  if(updatedNote === undefined){
+  const updatedNote = await noteService.updateNote(id,title,content)
+  if(updatedNote === null){
     return res.status(StatusCodes.NOT_FOUND).json({
       error: ReasonPhrases.NOT_FOUND,
       message: "Note with id "+id+" not found"
@@ -83,7 +83,7 @@ export const updateNote = (req: Request, res: Response) => {
 
 };
 
-export const deleteNote = (req: Request, res: Response) => {
+export const deleteNote = async (req: Request, res: Response) => {
   const {id} = req.params
   if(!id){
     return res.status(StatusCodes.BAD_REQUEST).json({
@@ -91,7 +91,7 @@ export const deleteNote = (req: Request, res: Response) => {
       message: "No id provided"
     })
   }
-  const noteDeleted = noteService.deleteNote(id)
+  const noteDeleted = await noteService.deleteNote(id)
 
   if(noteDeleted === false){
     return res.status(StatusCodes.NOT_FOUND).json({

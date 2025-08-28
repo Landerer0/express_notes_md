@@ -1,48 +1,34 @@
-import { randomUUID } from "crypto";
-import { Note } from "../models/note";
-import { noteRepository } from "../repositories/noteRepository";
+import { Note } from "../models/note"
+import { NoteRepository } from "../repositories/noteRepository"
+import { noteRepositoryJSON } from "../repositories/noteRepositoryJSON"
+import { noteRepositorySQLite } from "../repositories/noteRepositorySQLite"
 
-export const getAllNotes = (): Note[] => {
-  return noteRepository.getAll();
+const repository: NoteRepository =
+  process.env.USE_SQLITE === "true" ? noteRepositorySQLite : noteRepositoryJSON
+
+export const getAllNotes = async (): Promise<Note[]> => {
+  return await repository.getAll()
 };
 
-export const getNoteById = (id: string): Note | undefined => {
-  return noteRepository.getById(id);
+export const getNoteById = async (id: string): Promise<Note | null> => {
+  return await repository.getById(id)
 };
 
-export const createNote = (title: string, content: string): Note => {
-  const newNote: Note = {
-    id: randomUUID(),
-    title,
-    content,
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  };
-
-  noteRepository.save(newNote);
-  return newNote;
+export const createNote = async (
+  title: string,
+  content: string
+): Promise<Note> => {
+  return await repository.save({ title, content })
 };
 
-export const updateNote = (
+export const updateNote = async (
   id: string,
   title?: string,
   content?: string
-): Note | undefined => {
-  const note = noteRepository.getById(id);
-  if (!note) return undefined;
-
-  if (title !== undefined) note.title = title;
-  if (content !== undefined) note.content = content;
-  note.updatedAt = new Date();
-
-  noteRepository.update(note);
-  return note;
+): Promise<Note | null> => {
+  return await repository.update(id, { title, content })
 };
 
-export const deleteNote = (id: string): boolean => {
-  const note = noteRepository.getById(id);
-  if (!note) return false;
-
-  noteRepository.delete(id);
-  return true;
+export const deleteNote = async (id: string): Promise<boolean> => {
+  return await repository.delete(id)
 };
