@@ -3,10 +3,8 @@ import { checkGrammar, renderMarkdownToHtml } from "../controllers/utilsControll
 
 const router = Router();
 
-// POST /api/utils/checkGrammar
+// /api/utils
 router.post("/checkGrammar", checkGrammar);
-
-// POST /api/utils/renderMarkdownToHtml
 router.post("/renderMarkdownToHtml", renderMarkdownToHtml);
 
 export default router;
