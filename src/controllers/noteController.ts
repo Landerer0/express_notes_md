@@ -6,7 +6,7 @@ export const getNotes = (req: Request, res: Response) => {
   const notes = noteService.getAllNotes()
   res.status(StatusCodes.ACCEPTED).json({
     message: ReasonPhrases.ACCEPTED,
-    notes: notes
+    result: notes
   })
 };
 
@@ -30,7 +30,7 @@ export const getNote = (req: Request, res: Response) => {
 
   res.status(StatusCodes.ACCEPTED).json({ 
     message: ReasonPhrases.ACCEPTED,
-    note: note
+    result: note
   })
 };
 
@@ -47,7 +47,7 @@ export const createNote = (req: Request, res: Response) => {
   const newNote = noteService.createNote(title, content);
   res.status(StatusCodes.CREATED).json({
     message: ReasonPhrases.CREATED,
-    note: newNote
+    result: newNote
   })
 };
 
@@ -78,7 +78,7 @@ export const updateNote = (req: Request, res: Response) => {
   }
   res.status(StatusCodes.OK).json({
     message: ReasonPhrases.OK,
-    note: updatedNote
+    result: updatedNote
   })
 
 };

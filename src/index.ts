@@ -1,5 +1,6 @@
 import express from 'express';
 import noteRoutes from './routes/noteRoutes';
+import utilsRoutes from "./routes/utilsRoutes";
 
 const app = express();
 const PORT = 3000;
@@ -7,6 +8,7 @@ const PORT = 3000;
 app.use(express.json());
 
 app.use('/api/notes', noteRoutes);
+app.use("/api/utils", utilsRoutes);
 
 app.listen(PORT, () => {
   console.log(`🚀 Server running on http://localhost:${PORT}`);
