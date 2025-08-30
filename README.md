@@ -1,112 +1,34 @@
 # 📒 Markdown Note Taking App (Backend)
 
-Proyecto basado en el roadmap [roadmap.sh/projects/markdown-note-taking-app](https://roadmap.sh/projects/markdown-note-taking-app), implementado con **Express.js**, **TypeScript** y **ESLint**.
+Proyecto basado en el roadmap [roadmap.sh/projects/markdown-note-taking-app](https://roadmap.sh/projects/markdown-note-taking-app), implementado con **Express.js**, **TypeScript** y **ESLint**, y documentada con Swagger.
 
 Este backend provee un API REST para gestionar notas en formato Markdown.
 
 ---
 
 ## 🚀 Tecnologías utilizadas
+
 - [Node.js](https://nodejs.org/)
 - [Express](https://expressjs.com/)
 - [TypeScript](https://www.typescriptlang.org/)
 - [ESLint](https://eslint.org/) (con configuración recomendada para TS)
-- [http-status-codes](https://www.npmjs.com/package/http-status-codes) (para manejar códigos de estado legibles)
+- [http-status-codes](https://www.npmjs.com/package/http-status-codes)
+- [Swagger UI Express](https://www.npmjs.com/package/swagger-ui-express)
+- [yamljs](https://www.npmjs.com/package/yamljs)
 
 ---
 
-## 📂 Estructura del proyecto
 
-```
-express_notes_md/
-│── src/
-│   ├── controllers/
-│   │   └── noteController.ts   # Controladores: manejan req/res
-│   ├── services/
-│   │   └── noteService.ts      # Lógica de negocio (CRUD de notas)
-│   ├── routes/
-│   │   └── noteRoutes.ts       # Rutas de la API
-│   ├── app.ts                  # Configuración de Express
-│   └── server.ts               # Punto de entrada
-│
-├── package.json
-├── tsconfig.json
-├── .eslintrc.json
-└── README.md
-```
+## 📄 Documentación Swagger
 
----
+Este proyecto incluye documentación Swagger para explorar y probar los endpoints de forma interactiva.
 
-## 📌 Endpoints disponibles
+1. La documentación se encuentra en el archivo `src/swagger/swagger.yaml`, siguiendo el estándar OpenAPI 3.0.  
+2. Al iniciar el servidor, Swagger UI estará disponible en la ruta:
 
-### Crear nota
-```http
-POST /api/notes
-Content-Type: application/json
-
-{
-  "title": "Mi primera nota",
-  "content": "Contenido en **Markdown**"
-}
-```
-📥 **Respuesta**
-```json
-{
-  "id": "1",
-  "title": "Mi primera nota",
-  "content": "Contenido en **Markdown**"
-}
-```
-
----
-
-### Listar todas las notas
-```http
-GET /api/notes
-```
-
----
-
-### Obtener una nota por ID
-```http
-GET /api/notes/:id
-```
-
----
-
-### Actualizar una nota
-```http
-PUT /api/notes/:id
-Content-Type: application/json
-
-{
-  "title": "Título actualizado",
-  "content": "Nuevo contenido"
-}
-```
-👉 Si solo se manda `title` o `content`, se actualiza el campo enviado.
-
----
-
-### Eliminar una nota
-```http
-DELETE /api/notes/:id
-```
-📥 **Respuesta exitosa**
-```json
-{
-  "message": "Note deleted successfully"
-}
-```
-
-📥 **Si no existe**
-```json
-{
-  "message": "Note not found"
-}
-```
-
----
+´´´
+[GET /api-docs](http://localhost:3000/api-docs)
+´´´
 
 ## 🛠️ Instalación y uso
 
@@ -121,40 +43,12 @@ DELETE /api/notes/:id
    npm install
    ```
 
-3. Compilar TypeScript:
+3. Generar base de datos usando Prisma>
    ```bash
-   npm run build
+   npx prisma generate
    ```
 
-4. Iniciar servidor en modo desarrollo:
+4. Iniciar servidor:
    ```bash
    npm run dev
    ```
-
-5. Iniciar servidor en producción:
-   ```bash
-   npm start
-   ```
-
----
-
-## 🧪 Pruebas con Postman
-
-Ejemplo de colección:
-
-1. **POST** `http://localhost:3000/api/notes`
-   - Body: JSON con `title` y `content`.
-2. **GET** `http://localhost:3000/api/notes`
-3. **GET** `http://localhost:3000/api/notes/1`
-4. **PUT** `http://localhost:3000/api/notes/1`
-   - Body: JSON con campos a actualizar.
-5. **DELETE** `http://localhost:3000/api/notes/1`
-
----
-
-## ✨ Próximos pasos
-- Persistencia en base de datos (ej: PostgreSQL o MongoDB).
-- Autenticación de usuarios (JWT).
-- Tests automatizados (Jest/Supertest).
-
----
