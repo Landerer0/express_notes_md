@@ -2,8 +2,7 @@ import { Request, Response } from "express";
 import * as utilsService from "../services/utilsService";
 import { StatusCodes, ReasonPhrases } from "http-status-codes";
 
-// ✅ Render Markdown → HTML
-export const renderMarkdownToHtml = (req: Request, res: Response) => {
+export const renderMarkdownToHtml = async (req: Request, res: Response) => {
   const { markdown } = req.body;
   if (!markdown) {
     return res.status(StatusCodes.BAD_REQUEST).json({
@@ -13,7 +12,7 @@ export const renderMarkdownToHtml = (req: Request, res: Response) => {
   }
 
   try {
-    const html = utilsService.renderMarkdownToHtml(markdown);
+    const html = await utilsService.renderMarkdownToHtml(markdown);
     res.status(StatusCodes.OK).json({
       message: ReasonPhrases.OK,
       result: html,
@@ -25,9 +24,8 @@ export const renderMarkdownToHtml = (req: Request, res: Response) => {
   }
 };
 
-// ✅ Revisión de gramática
 export const checkGrammar = async (req: Request, res: Response) => {
-  const { content } = req.body;
+  const { content, language } = req.body;
   if (!content) {
     return res.status(StatusCodes.BAD_REQUEST).json({
       error: ReasonPhrases.BAD_REQUEST,
@@ -36,14 +34,20 @@ export const checkGrammar = async (req: Request, res: Response) => {
   }
 
   try {
-    const result = await utilsService.checkGrammarWithAPI(content);
-    res.status(StatusCodes.OK).json(result);
+    const result = await utilsService.checkGrammarWithAPI(content, language);
+    res.status(StatusCodes.OK).json({
+      message: ReasonPhrases.OK,
+      result: {
+        original: content,
+        result: result
+      }});
   } catch (error) {
     res
       .status(StatusCodes.INTERNAL_SERVER_ERROR)
       .json({
         error: ReasonPhrases.INTERNAL_SERVER_ERROR,
-        message: "Error checking grammar",
+        message: error,
       });
   }
 };
+

@@ -1,50 +1,34 @@
-// Aquí irá la lógica de negocio más adelante
-// Por ahora exportamos funciones vacías para evitar errores
+import { Note } from "../models/note"
+import { NoteRepository } from "../repositories/noteRepository"
+import { noteRepositoryJSON } from "../repositories/noteRepositoryJSON"
+import { noteRepositorySQLite } from "../repositories/noteRepositorySQLite"
 
-import { randomUUID } from 'crypto';
-import { Note } from '../models/note';
+const repository: NoteRepository =
+  process.env.USE_SQLITE === "true" ? noteRepositorySQLite : noteRepositoryJSON
 
-
-let notes: Note[] = [];
-
-export const getAllNotes = () => {
-    return notes;
+export const getAllNotes = async (): Promise<Note[]> => {
+  return await repository.getAll()
 };
 
-export const getNoteById = (id: string): Note | undefined => {
-  return notes.find(note => note.id === id);
+export const getNoteById = async (id: string): Promise<Note | null> => {
+  return await repository.getById(id)
 };
 
-export const createNote = (title: string, content: string): Note => {
-    const newNote: Note = {
-        id: randomUUID(),
-        title,
-        content,
-        createdAt: new Date(),
-        updatedAt: new Date()
-    };
-    notes.push(newNote);
-    return newNote;
+export const createNote = async (
+  title: string,
+  content: string
+): Promise<Note> => {
+  return await repository.save({ title, content })
 };
 
-// Falta implementar que pasa si la nota no existe, y nota de error asociada
-export const updateNote = (id: string, title?: string, content?: string): Note | undefined => {
-    const note = getNoteById(id)
-    if(note === undefined) return undefined
-    
-    if(title !== undefined) note.title = title 
-    if(content !== undefined) note.content = content
-    note.updatedAt = new Date()
-    return note;
+export const updateNote = async (
+  id: string,
+  title?: string,
+  content?: string
+): Promise<Note | null> => {
+  return await repository.update(id, { title, content })
 };
 
-export const deleteNote = (id: string): boolean => {
-  const index = notes.findIndex(note => note.id === id);
-
-  if (index === -1) {
-    return false; // No existe
-  }
-
-  notes.splice(index, 1);
-  return true; // borrado con éxito
+export const deleteNote = async (id: string): Promise<boolean> => {
+  return await repository.delete(id)
 };

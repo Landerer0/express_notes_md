@@ -3,3 +3,7 @@ dist/
 .env
 
 notes-api.postman_collection.json
+data/notes.json
+/src/generated/prisma
+
+/src/generated/prisma

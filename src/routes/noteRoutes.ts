@@ -3,6 +3,7 @@ import * as noteController from '../controllers/noteController';
 
 const router = Router();
 
+// /api/notes
 router.get('/', noteController.getNotes);
 router.get('/:id', noteController.getNote);
 router.post('/', noteController.createNote);
