@@ -26,9 +26,9 @@ Este proyecto incluye documentación Swagger para explorar y probar los endpoint
 1. La documentación se encuentra en el archivo `src/swagger/swagger.yaml`, siguiendo el estándar OpenAPI 3.0.  
 2. Al iniciar el servidor, Swagger UI estará disponible en la ruta:
 
-´´´
+```bash
 [GET /api-docs](http://localhost:3000/api-docs)
-´´´
+```
 
 ## 🛠️ Instalación y uso
 
