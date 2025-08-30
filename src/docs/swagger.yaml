@@ -1,0 +1,125 @@
+openapi: 3.0.0
+info:
+  title: Markdown Notes API
+  version: 1.0.0
+  description: API para gestionar notas en formato Markdown
+servers:
+  - url: http://localhost:3000
+paths:
+  /api/notes:
+    get:
+      summary: Obtener todas las notas
+      tags: [Notes]
+      responses:
+        '200':
+          description: Lista de notas
+    post:
+      summary: Crear una nueva nota
+      tags: [Notes]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - title
+                - content
+              properties:
+                title:
+                  type: string
+                content:
+                  type: string
+      responses:
+        '201':
+          description: Nota creada
+  /api/notes/{id}:
+    get:
+      summary: Obtener una nota por ID
+      tags: [Notes]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Nota encontrada
+        '404':
+          description: Nota no encontrada
+    put:
+      summary: Actualizar una nota
+      tags: [Notes]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                content:
+                  type: string
+      responses:
+        '200':
+          description: Nota actualizada
+        '404':
+          description: Nota no encontrada
+    delete:
+      summary: Eliminar una nota
+      tags: [Notes]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Nota eliminada
+        '404':
+          description: Nota no encontrada
+  /api/utils/checkGrammar:
+    post:
+      summary: Verificar la gramática del contenido Markdown
+      tags: [Utils]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - content
+              properties:
+                content:
+                  type: string
+      responses:
+        '200':
+          description: Resultados de la verificación gramatical
+  /api/utils/renderMarkdownToHtml:
+    post:
+      summary: Renderizar contenido Markdown a HTML
+      tags: [Utils]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - markdown
+              properties:
+                content:
+                  type: string
+      responses:
+        '200':
+          description: Contenido renderizado en HTML

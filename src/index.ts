@@ -1,9 +1,12 @@
 import express from 'express';
 import noteRoutes from './routes/noteRoutes';
 import utilsRoutes from "./routes/utilsRoutes";
+import { setupSwagger } from './swagger';
 
 const app = express();
 const PORT = 3000;
+
+setupSwagger(app);
 
 app.use(express.json());
 
