@@ -10,6 +10,15 @@ export const getNotes = async (req: Request, res: Response) => {
   });
 };
 
+export const getUserNotes = async (req: Request, res: Response) => {
+  const userId = req.userId
+  const userNotes = await noteService.getAllNotesByUser(userId);
+  res.status(StatusCodes.ACCEPTED).json({
+    message: ReasonPhrases.ACCEPTED,
+    result: userNotes,
+  });
+};
+
 export const getNote = async (req: Request, res: Response) => {
   const { id } = req.params;
   if (!id) {
@@ -63,6 +72,7 @@ export const getNotesTitlePdf = async (req: Request, res: Response) => {
 
 export const createNote = async (req: Request, res: Response) => {
   const { title, content } = req.body;
+  const userId = req.userId
 
   if (!title) {
     return res.status(StatusCodes.BAD_REQUEST).json({
@@ -71,7 +81,7 @@ export const createNote = async (req: Request, res: Response) => {
     });
   }
 
-  const newNote = await noteService.createNote(title, content);
+  const newNote = await noteService.createNote(userId, title, content);
   res.status(StatusCodes.CREATED).json({
     message: ReasonPhrases.CREATED,
     result: newNote,

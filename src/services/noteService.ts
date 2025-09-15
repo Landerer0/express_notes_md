@@ -1,25 +1,25 @@
 import { Note } from "../models/note";
 import { NoteRepository } from "../repositories/noteRepository";
-import { noteRepositoryJSON } from "../repositories/noteRepositoryJSON";
-import { noteRepositorySQLite } from "../repositories/noteRepositorySQLite";
 import PDFDocument from "pdfkit";
 
-const repository: NoteRepository =
-  process.env.USE_SQLITE === "true" ? noteRepositorySQLite : noteRepositoryJSON;
-
 export const getAllNotes = async (): Promise<Note[]> => {
-  return await repository.getAll();
+  return await NoteRepository.getAll();
 };
 
 export const getNoteById = async (id: string): Promise<Note | null> => {
-  return await repository.getById(id);
+  return await NoteRepository.getById(id);
+};
+
+export const getAllNotesByUser = async (userId: string) => {
+  return await NoteRepository.getAllNotesByUser(userId);
 };
 
 export const createNote = async (
+  userId: string,
   title: string,
   content: string
 ): Promise<Note> => {
-  return await repository.save({ title, content });
+  return await NoteRepository.save({ userId, title, content });
 };
 
 export const updateNote = async (
@@ -27,11 +27,11 @@ export const updateNote = async (
   title?: string,
   content?: string
 ): Promise<Note | null> => {
-  return await repository.update(id, { title, content });
+  return await NoteRepository.update(id, { title, content });
 };
 
 export const deleteNote = async (id: string): Promise<boolean> => {
-  return await repository.delete(id);
+  return await NoteRepository.delete(id);
 };
 
 export const generateNotesPDF = async (notes: Note[]): Promise<Buffer> => {
@@ -41,7 +41,7 @@ export const generateNotesPDF = async (notes: Note[]): Promise<Buffer> => {
   doc.on("data", (chunk) => buffers.push(chunk));
   doc.on("end", () => {});
 
-  doc.fontSize(16).text("Títulos de las Notas", { underline: true });
+  doc.fontSize(16).text("Note titles", { underline: true });
   doc.moveDown();
 
   notes.forEach((note, index) => {

@@ -24,11 +24,7 @@ Este backend provee un API REST para gestionar notas en formato Markdown.
 Este proyecto incluye documentación Swagger para explorar y probar los endpoints de forma interactiva.
 
 1. La documentación se encuentra en el archivo `src/swagger/swagger.yaml`, siguiendo el estándar OpenAPI 3.0.  
-2. Al iniciar el servidor, Swagger UI estará disponible en la ruta:
-
-```bash
-[GET /api-docs](http://localhost:3000/api-docs)
-```
+2. Al iniciar el servidor, Swagger UI estará disponible en la ruta `GET /api-docs`, por defecto en http://localhost:3000/api-docs
 
 ## 🛠️ Instalación y uso
 
@@ -43,7 +39,7 @@ Este proyecto incluye documentación Swagger para explorar y probar los endpoint
    npm install
    ```
 
-3. Generar base de datos usando Prisma>
+3. Generar base de datos usando Prisma
    ```bash
    npx prisma generate
    ```
