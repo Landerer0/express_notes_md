@@ -6,12 +6,137 @@ info:
 servers:
   - url: http://localhost:3000
 paths:
+  /api/auth/register:
+    post:
+      summary: Register a new user
+      tags:
+        - Auth
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - password
+              properties:
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+                  format: password
+      responses:
+        "201":
+          description: User successfully registered
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  user:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      email:
+                        type: string
+        "400":
+          description: User already exists
+        "500":
+          description: Internal server error
+
+  /api/auth/login:
+    post:
+      summary: Log in a user
+      tags:
+        - Auth
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - password
+              properties:
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+                  format: password
+      responses:
+        "200":
+          description: User successfully logged in
+          headers:
+            Set-Cookie:
+              description: JWT token cookie
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  user:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      email:
+                        type: string
+        "401":
+          description: Unauthorized - invalid credentials
+
+  /api/auth/logout:
+    post:
+      summary: Log out the current user
+      tags:
+        - Auth
+      responses:
+        "200":
+          description: User successfully logged out
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+
+  /api/auth/verify-session:
+    get:
+      summary: Verify user session
+      tags:
+        - Auth
+      responses:
+        "200":
+          description: Valid session
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  userId:
+                    type: string
+        "401":
+          description: Unauthorized - invalid or missing token
+
   /api/notes:
     get:
-      summary: Obtener todas las notas
+      summary: Obtener todas las notas del usuario
       tags: [Notes]
       responses:
-        '200':
+        "200":
           description: Lista de notas
     post:
       summary: Crear una nueva nota
@@ -31,8 +156,9 @@ paths:
                 content:
                   type: string
       responses:
-        '201':
+        "201":
           description: Nota creada
+
   /api/notes/{id}:
     get:
       summary: Obtener una nota por ID
@@ -44,9 +170,9 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        "200":
           description: Nota encontrada
-        '404':
+        "404":
           description: Nota no encontrada
     put:
       summary: Actualizar una nota
@@ -69,9 +195,9 @@ paths:
                 content:
                   type: string
       responses:
-        '200':
+        "200":
           description: Nota actualizada
-        '404':
+        "404":
           description: Nota no encontrada
     delete:
       summary: Eliminar una nota
@@ -83,10 +209,11 @@ paths:
           schema:
             type: string
       responses:
-        '204':
+        "204":
           description: Nota eliminada
-        '404':
+        "404":
           description: Nota no encontrada
+
   /api/notes/pdf/titles:
     get:
       summary: Generar un PDF con los títulos de todas las notas
@@ -99,13 +226,14 @@ paths:
           required: false
           description: Nombre opcional del archivo PDF
       responses:
-        '200':
+        "200":
           description: PDF generado exitosamente
           content:
             application/pdf:
               schema:
                 type: string
                 format: binary
+
   /api/utils/checkGrammar:
     post:
       summary: Verificar la gramática del contenido Markdown
@@ -125,8 +253,9 @@ paths:
                   type: string
                   description: Idioma del contenido (por ejemplo 'Spanish' o 'English')
       responses:
-        '200':
+        "200":
           description: Resultados de la verificación gramatical
+
   /api/utils/renderMarkdownToHtml:
     post:
       summary: Renderizar contenido Markdown a HTML
@@ -143,6 +272,5 @@ paths:
                 content:
                   type: string
       responses:
-        '200':
+        "200":
           description: Contenido renderizado en HTML
-

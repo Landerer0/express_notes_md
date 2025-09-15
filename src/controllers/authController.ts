@@ -44,7 +44,7 @@ export const login = async (req: Request, res: Response) => {
     const { token, user } = await loginUser(email, password);
     res.cookie("token", token, COOKIE_OPTIONS);
     res.json({
-      message: "User Logged in",
+      message: "User successfully logged in",
       user: { id: user.id, email: user.email },
     });
   } catch (err: any) {
@@ -56,7 +56,7 @@ export const login = async (req: Request, res: Response) => {
 
 export const logout = (_req: Request, res: Response) => {
   res.clearCookie("token", COOKIE_OPTIONS);
-  res.json({ message: "User Logged out" });
+  res.json({ message: "User successfully logged out" });
 };
 
 export const verifySession = (req: Request, res: Response) => {

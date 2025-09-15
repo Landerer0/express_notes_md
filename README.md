@@ -2,7 +2,7 @@
 
 Proyecto basado en el roadmap [roadmap.sh/projects/markdown-note-taking-app](https://roadmap.sh/projects/markdown-note-taking-app), implementado con **Express.js**, **TypeScript** y **ESLint**, y documentada con Swagger.
 
-Este backend provee un API REST para gestionar notas en formato Markdown.
+Este backend provee un API REST para gestionar notas en formato Markdown. Cada nota se encuentra asociada a un usuario, el cual se debe registrar e iniciar sesión para poder acceder a sus notas. La autenticación utiliza JWT, los cuales se almacenan en cookies.
 
 ---
 
