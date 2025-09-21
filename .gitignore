@@ -7,3 +7,4 @@ data/notes.json
 /src/generated/prisma
 
 /src/generated/prisma
+prisma/prisma/dev.db

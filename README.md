@@ -42,6 +42,7 @@ Este proyecto incluye documentación Swagger para explorar y probar los endpoint
 3. Generar base de datos usando Prisma
    ```bash
    npx prisma generate
+   npx prisma migrate dev --name init
    ```
 
 4. Iniciar servidor:

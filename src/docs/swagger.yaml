@@ -234,7 +234,7 @@ paths:
                 type: string
                 format: binary
 
-  /api/utils/checkGrammar:
+  /api/utils/check-grammar:
     post:
       summary: Verificar la gramática del contenido Markdown
       tags: [Utils]
@@ -256,7 +256,7 @@ paths:
         "200":
           description: Resultados de la verificación gramatical
 
-  /api/utils/renderMarkdownToHtml:
+  /api/utils/render-markdown-html:
     post:
       summary: Renderizar contenido Markdown a HTML
       tags: [Utils]

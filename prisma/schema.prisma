@@ -14,30 +14,57 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-
-// model Note {
-//   id        String   @id @default(uuid())
-//   title     String
-//   content   String
-//   createdAt DateTime @default(now())
-//   updatedAt DateTime @updatedAt
-// }
-
 model User {
+  id            String         @id @default(uuid())
+  email         String         @unique
+  password      String
+  notes         Note[]
+  sharedNotes   SharedNote[]
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  refreshTokens RefreshToken[]
+}
+
+model RefreshToken {
   id        String   @id @default(uuid())
-  email     String   @unique
-  password  String
-  notes     Note[]
+  tokenHash String
   createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
 }
 
 model Note {
-  id        String   @id @default(uuid())
-  title     String
-  content   String
-  userId    String
-  user      User     @relation(fields: [userId], references: [id])
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id         String       @id @default(uuid())
+  title      String
+  content    String
+  userId     String
+  user       User         @relation(fields: [userId], references: [id])
+  sharedWith SharedNote[]
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+}
+
+enum SharedPermission {
+  VIEW
+  EDIT
+}
+
+model SharedNote {
+  id         String           @id @default(uuid())
+  noteId     String
+  userId     String
+  permission SharedPermission
+  grantedBy  String?
+  expiresAt  DateTime?
+  revokedAt  DateTime?
+  createdAt  DateTime         @default(now())
+
+  note Note @relation(fields: [noteId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([noteId, userId])
+  @@index([userId])
+  @@index([noteId])
 }

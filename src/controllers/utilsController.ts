@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import * as utilsService from "../services/utilsService";
 import { StatusCodes, ReasonPhrases } from "http-status-codes";
 
-export const renderMarkdownToHtml = async (req: Request, res: Response) => {
+export const renderMarkdownHtml = async (req: Request, res: Response) => {
   const { markdown } = req.body;
   if (!markdown) {
     return res.status(StatusCodes.BAD_REQUEST).json({

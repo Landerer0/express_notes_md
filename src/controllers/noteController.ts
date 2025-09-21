@@ -1,21 +1,34 @@
 import { Request, Response } from "express";
 import { StatusCodes, ReasonPhrases } from "http-status-codes";
 import * as noteService from "../services/noteService";
+import { serializeNote, serializeUserWithNotes, serializeUserNotes } from "../utils/serializer";
+import { SharedPermission } from "../generated/prisma";
 
-export const getNotes = async (req: Request, res: Response) => {
-  const notes = await noteService.getAllNotes();
+export const getAllNotes = async (req: Request, res: Response) => {
+  try {
+    const userId = req.userId;
+    const notes = await noteService.getAllUserNotes(userId);
+    res.json(notes);
+  } catch (error) {
+    res.status(500).json({ error: "Failed to fetch notes" });
+  }
+};
+
+export const getUserAndSharedNotes = async (req: Request, res: Response) => {
+  const userId = req.userId;
+  const userNotes = await noteService.getAllUserNotes(userId);
   res.status(StatusCodes.ACCEPTED).json({
     message: ReasonPhrases.ACCEPTED,
-    result: notes,
+    result: serializeUserNotes(userNotes),
   });
 };
 
 export const getUserNotes = async (req: Request, res: Response) => {
-  const userId = req.userId
+  const userId = req.userId;
   const userNotes = await noteService.getAllNotesByUser(userId);
   res.status(StatusCodes.ACCEPTED).json({
     message: ReasonPhrases.ACCEPTED,
-    result: userNotes,
+    result: serializeUserWithNotes(userNotes),
   });
 };
 
@@ -39,7 +52,7 @@ export const getNote = async (req: Request, res: Response) => {
 
   res.status(StatusCodes.ACCEPTED).json({
     message: ReasonPhrases.ACCEPTED,
-    result: note,
+    result: serializeNote(note),
   });
 };
 
@@ -72,7 +85,7 @@ export const getNotesTitlePdf = async (req: Request, res: Response) => {
 
 export const createNote = async (req: Request, res: Response) => {
   const { title, content } = req.body;
-  const userId = req.userId
+  const userId = req.userId;
 
   if (!title) {
     return res.status(StatusCodes.BAD_REQUEST).json({
@@ -84,7 +97,7 @@ export const createNote = async (req: Request, res: Response) => {
   const newNote = await noteService.createNote(userId, title, content);
   res.status(StatusCodes.CREATED).json({
     message: ReasonPhrases.CREATED,
-    result: newNote,
+    result: serializeNote(newNote),
   });
 };
 
@@ -115,7 +128,7 @@ export const updateNote = async (req: Request, res: Response) => {
   }
   res.status(StatusCodes.OK).json({
     message: ReasonPhrases.OK,
-    result: updatedNote,
+    result: serializeNote(updatedNote),
   });
 };
 
@@ -139,3 +152,65 @@ export const deleteNote = async (req: Request, res: Response) => {
     return res.status(StatusCodes.NO_CONTENT).send();
   }
 };
+
+export const shareNote = async (req: Request, res: Response) => {
+  const { noteId } = req.params
+  const { userId, permission, expiresAt } = req.body
+  const grantedBy = req.userId
+
+  if (!noteId || !userId || !permission) {
+    return res.status(StatusCodes.BAD_REQUEST).json({
+      error: ReasonPhrases.BAD_REQUEST,
+      message: "noteId, userId and permission are required",
+    })
+  }
+
+  const sharedNote = await noteService.shareNote(
+    noteId,
+    userId,
+    grantedBy,
+    permission as SharedPermission,
+    expiresAt ? new Date(expiresAt) : undefined
+  )
+
+  res.status(StatusCodes.CREATED).json({
+    message: "Note shared successfully",
+    result: sharedNote,
+  })
+}
+
+export const revokeShare = async (req: Request, res: Response) => {
+  const { noteId } = req.params
+  const { userId } = req.body
+
+  if (!noteId || !userId) {
+    return res.status(StatusCodes.BAD_REQUEST).json({
+      error: ReasonPhrases.BAD_REQUEST,
+      message: "noteId y userId are required",
+    })
+  }
+
+  const revoked = await noteService.revokeShare(noteId, userId)
+
+  if (!revoked) {
+    return res.status(StatusCodes.NOT_FOUND).json({
+      error: ReasonPhrases.NOT_FOUND,
+      message: "No shared note found to revoke",
+    })
+  }
+
+  res.status(StatusCodes.OK).json({
+    message: "Revoked access to note",
+  })
+}
+
+export const getSharedNotesForUser = async (req: Request, res: Response) => {
+  const userId = req.userId
+
+  const sharedNotes = await noteService.getSharedNotesForUser(userId)
+
+  res.status(StatusCodes.OK).json({
+    message: ReasonPhrases.OK,
+    result: sharedNotes,
+  })
+}
