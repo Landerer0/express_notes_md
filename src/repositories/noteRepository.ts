@@ -89,13 +89,6 @@ export const NoteRepository = {
     });
   },
 
-  async getSharedNotesForUser(userId: string) {
-    return await prisma.sharedNote.findMany({
-      where: { userId, revokedAt: null, expiresAt: { gte: new Date() } },
-      include: { note: true },
-    });
-  },
-
   async checkPermission(
     noteId: string,
     userId: string,

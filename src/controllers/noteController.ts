@@ -1,7 +1,11 @@
 import { Request, Response } from "express";
 import { StatusCodes, ReasonPhrases } from "http-status-codes";
 import * as noteService from "../services/noteService";
-import { serializeNote, serializeUserWithNotes, serializeUserNotes } from "../utils/serializer";
+import {
+  serializeNote,
+  serializeUserWithNotes,
+  serializeUserNotes,
+} from "../utils/serializer";
 import { SharedPermission } from "../generated/prisma";
 
 export const getAllNotes = async (req: Request, res: Response) => {
@@ -10,7 +14,12 @@ export const getAllNotes = async (req: Request, res: Response) => {
     const notes = await noteService.getAllUserNotes(userId);
     res.json(notes);
   } catch (error) {
-    res.status(500).json({ error: "Failed to fetch notes" });
+    res
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
+      .json({
+        error: ReasonPhrases.INTERNAL_SERVER_ERROR,
+        message: "Failed to fetch notes",
+      });
   }
 };
 
@@ -33,20 +42,20 @@ export const getUserNotes = async (req: Request, res: Response) => {
 };
 
 export const getNote = async (req: Request, res: Response) => {
-  const { id } = req.params;
-  if (!id) {
+  const { noteId } = req.params;
+  if (!noteId) {
     return res.status(StatusCodes.BAD_REQUEST).json({
       error: ReasonPhrases.BAD_REQUEST,
-      message: "No id provided",
+      message: "No noteId provided",
     });
   }
 
-  const note = await noteService.getNoteById(id);
+  const note = await noteService.getNoteById(noteId);
 
   if (note === null) {
     return res.status(StatusCodes.NOT_FOUND).json({
       error: ReasonPhrases.NOT_FOUND,
-      message: "Note with id " + id + " not found",
+      message: "Note with id " + noteId + " not found",
     });
   }
 
@@ -154,15 +163,15 @@ export const deleteNote = async (req: Request, res: Response) => {
 };
 
 export const shareNote = async (req: Request, res: Response) => {
-  const { noteId } = req.params
-  const { userId, permission, expiresAt } = req.body
-  const grantedBy = req.userId
+  const { noteId } = req.params;
+  const { userId, permission, expiresAt } = req.body;
+  const grantedBy = req.userId;
 
   if (!noteId || !userId || !permission) {
     return res.status(StatusCodes.BAD_REQUEST).json({
       error: ReasonPhrases.BAD_REQUEST,
       message: "noteId, userId and permission are required",
-    })
+    });
   }
 
   const sharedNote = await noteService.shareNote(
@@ -171,46 +180,46 @@ export const shareNote = async (req: Request, res: Response) => {
     grantedBy,
     permission as SharedPermission,
     expiresAt ? new Date(expiresAt) : undefined
-  )
+  );
 
   res.status(StatusCodes.CREATED).json({
     message: "Note shared successfully",
-    result: sharedNote,
-  })
-}
+    result: serializeNote(sharedNote),
+  });
+};
 
 export const revokeShare = async (req: Request, res: Response) => {
-  const { noteId } = req.params
-  const { userId } = req.body
+  const { noteId } = req.params;
+  const { userId } = req.body;
 
   if (!noteId || !userId) {
     return res.status(StatusCodes.BAD_REQUEST).json({
       error: ReasonPhrases.BAD_REQUEST,
       message: "noteId y userId are required",
-    })
+    });
   }
 
-  const revoked = await noteService.revokeShare(noteId, userId)
+  const revoked = await noteService.revokeShare(noteId, userId);
 
   if (!revoked) {
     return res.status(StatusCodes.NOT_FOUND).json({
       error: ReasonPhrases.NOT_FOUND,
       message: "No shared note found to revoke",
-    })
+    });
   }
 
   res.status(StatusCodes.OK).json({
     message: "Revoked access to note",
-  })
-}
+  });
+};
 
 export const getSharedNotesForUser = async (req: Request, res: Response) => {
-  const userId = req.userId
+  const userId = req.userId;
 
-  const sharedNotes = await noteService.getSharedNotesForUser(userId)
+  const sharedNotes = await noteService.getSharedNotesForUser(userId);
 
   res.status(StatusCodes.OK).json({
     message: ReasonPhrases.OK,
-    result: sharedNotes,
-  })
-}
+    result: serializeNote(sharedNotes),
+  });
+};

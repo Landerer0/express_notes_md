@@ -90,7 +90,7 @@ export const revokeShare = async (noteId: string, userId: string) => {
 }
 
 export const getSharedNotesForUser = async (userId: string) => {
-  return NoteRepository.getSharedNotesForUser(userId)
+  return NoteRepository.findSharedNotes(userId)
 }
 
 export const checkPermission = async (
