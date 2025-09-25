@@ -159,7 +159,7 @@ paths:
         "201":
           description: Nota creada
 
-  /api/notes/{id}:
+  /api/notes/{noteId}:
     get:
       summary: Obtener una nota por ID
       tags: [Notes]
@@ -213,6 +213,119 @@ paths:
           description: Nota eliminada
         "404":
           description: Nota no encontrada
+
+  /api/notes/{noteId}/share:
+    post:
+      summary: Share a note with another user
+      tags:
+        - Notes
+      parameters:
+        - name: noteId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: ID of the note to share
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - userId
+                - permission
+              properties:
+                userId:
+                  type: string
+                  description: ID of the user to share the note with
+                permission:
+                  type: string
+                  enum: [VIEW, EDIT]
+                  description: Permission level for the user
+                expiresAt:
+                  type: string
+                  format: date-time
+                  description: Expiration date for the share (optional)
+      responses:
+        "201":
+          description: Note shared successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  result:
+                    $ref: "#/components/schemas/Note"
+        "400":
+          description: Missing or invalid parameters
+        "401":
+          description: Unauthorized
+        "404":
+          description: Note not found
+
+  /api/notes/{noteId}/share/revoke:
+    post:
+      summary: Revoke a user's access to a shared note
+      tags:
+        - Notes
+      parameters:
+        - name: noteId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: ID of the shared note to revoke
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - userId
+              properties:
+                userId:
+                  type: string
+                  description: ID of the user whose access will be revoked
+      responses:
+        "200":
+          description: Revoked access to note
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        "400":
+          description: Missing parameters
+        "404":
+          description: Shared note not found
+
+  /api/notes/shared:
+    get:
+      summary: Get notes shared with the authenticated user
+      tags:
+        - Notes
+      responses:
+        "200":
+          description: List of notes shared with the user
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  result:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Note"
+        "401":
+          description: Unauthorized
 
   /api/notes/pdf/titles:
     get:
